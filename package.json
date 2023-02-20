@@ -1,0 +1,26 @@
+{
+  "name": "back-firebase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cristian366/BACK-FIREBASE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cristian366/BACK-FIREBASE/issues"
+  },
+  "homepage": "https://github.com/Cristian366/BACK-FIREBASE#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express.js": "^1.0.0",
+    "firebase": "^9.17.1"
+  }
+}
