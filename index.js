@@ -1,8 +1,8 @@
-const express = require ('express.js')
-const bcrypt = require ('bcrypt')
+const express = require('express')
+const bcrypt = require('bcrypt')
 const { initializeApp } = require('firebase/app')
-const { getFirestore } = require('firebase/firestore')
-require ('dotenv/config')
+const { getFirestore, collection, getDoc, doc, setDoc, getDocs } = require('firebase/firestore')
+require("dotenv/config")
 
 // Configuracion de Firebase
 const firebaseConfig = {
@@ -13,69 +13,58 @@ const firebaseConfig = {
     messagingSenderId: "489618249773",
     appId: "1:489618249773:web:e96484615c426b43abc0a4",
     measurementId: "G-H3QL9EFKF0"
-  };
+  }
 
-  // Inicializar BD con firebase
+//Iniciar BD con Firebase
 const firebase = initializeApp(firebaseConfig)
 const db = getFirestore()
 
-// Inicializar el servidor 
+//Inicializar el servidor
 const app = express()
 
 app.use(express.json())
 
-// Rutas para las peticiones EndPoint | api
-// Ruta Registro 
-app.post('/registro', (req, res)=> {
-  const { name , lastname, email, password, number } = req.body
- 
-app.get('/usuarios', (req, res) =>  {
-  const users = collection(db, "users")
-  console.log('usuarios', users)
-  res.json({
-    'alert': 'success',
-    users
-  })
-})
-  // Validaciones de los datos
+//Rutas para las peticiones EndPoint
+//Ruta registro
+app.post('/registro', (req,res) => {
+  const {name, lastname, email, password, number} = req.body
+
+  //Validaciones de los datos
   if(name.length < 3) {
-    res.json ({
-      'alert': 'nombre requiere minimo 3 caracteres'
-
-    })
-  } else  if(lastname.length < 3) {
-    res.json ({
-      'alert': 'El apellido requiere minimo 3 caracteres'
-
-    })
-  } 
-  else if (!email.length) {
     res.json({
-      'alert': 'debes escribir correo electronico'
+      'alert': 'nombre requiere minimo 3 caracters'
+    })
+  } else if (lastname.length <3){
+    res.json({
+      'alert': 'nombre requiere minimo 3 caracters'
+    })
+  } else if (!email.length) {
+    res.json({
+      'alert': 'debes escribir tu correo electronico'
     })
   } else if (password.length < 8) {
     res.json({
-      'alert': 'nombre requiere minimo 8 caracteres'
+      'alert': 'password requiere minimo 8 caracters'
     })
-  }else if (!Number(number) || number.length < 10) {
+  } else if (!Number(number) || number.length < 10) {
     res.json({
-      'alert': 'Introduce un numero telefonico correcto'
+      'alert': 'introduce un numero telefonico correcto'
     })
-  }else {
+  } else {
     const users = collection(db, 'users')
-    
-    //  Verificar que el correo no exixista en la coleccion
-    getDoc(doc(users, email)).then( user => {
-      if (user.exists()){
+
+    //verificar que el correo no exista en la collections
+    getDoc(doc(users, email)).then( user =>{
+      if(user.exists()) {
         res.json({
-          'alert': 'El correo ya existe en la BD'
+          'alert': 'El correo ya existe'
         })
       } else {
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(password, salt, (err, hash) => {
             req.body.password = hash
 
-            // Guardar en la BD
+            //guardar en la db
             setDoc(doc(users, email), req.body).then( reg => {
               res.json({
                 'alert': 'success',
@@ -89,9 +78,9 @@ app.get('/usuarios', (req, res) =>  {
   }
 })
 
-app.get('/usuarios', async (req, res) =>{
+app.get('/usuarios', async (req, res)=> {
   const colRef = collection(db, 'users')
-  const docsSnap = await getDocs(colRes)
+  const docsSnap = await getDocs(colRef)
   let data = []
   docsSnap.forEach(doc => {
     data.push(doc.data())
@@ -101,6 +90,7 @@ app.get('/usuarios', async (req, res) =>{
     data
   })
 })
+
 app.post('/login', (req, res) => {
   let { email, password } = req.body
 
@@ -138,7 +128,11 @@ app.post('/login', (req, res) => {
 
 const PORT = process.env.PORT || 19000
 
-//Ejecutamos el servidor 
+
+
+
+
+// Ejecutamos el servidor
 app.listen(PORT, () => {
-    console.log(`Escuchando en el Puerto: ${PORT}`)
+  console.log(`Escuchando en el Puerto: ${PORT}`)
 })
